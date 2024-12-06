@@ -7,6 +7,8 @@ use wasm_bindgen::prelude::*;
 
 use rand::Rng;
 
+use std::panic;
+
 #[wasm_bindgen]
 pub struct Renderer {
     world: HittableEnum,
@@ -18,11 +20,8 @@ pub struct Renderer {
 impl Renderer {
     #[wasm_bindgen(constructor)]
     pub fn new(input: &str) -> Renderer {
-        let ast = parse(input);
-        if ast.is_err() {
-            panic!("Error parsing input: {:?}", ast.err());
-        }
-        let (world, config, camera) = eval_ast(&ast.unwrap());
+        let ast = parse(input).unwrap();
+        let (world, config, camera) = eval_ast(&ast).unwrap();
         Renderer {
             world,
             config,
@@ -92,7 +91,19 @@ impl Renderer {
     }
 }
 
-#[wasm_bindgen(js_name = "canParse")]
-pub fn can_parse(input: &str) -> bool {
-    parse(input).is_ok()
+#[wasm_bindgen(js_name = "canCompile")]
+pub fn can_compile(input: &str) -> Result<(), JsValue> {
+    let ast = parse(input);
+    if ast.is_err() {
+        // return Err(JsValue::from_str(&format!("{:?}", ast.err().unwrap())));
+        return Err(JsValue::from_str("Syntax error"));
+    }
+    panic::catch_unwind(panic::AssertUnwindSafe(|| {
+        let res = eval_ast(&ast.unwrap());
+        if res.is_err() {
+            let res = res.err().unwrap();
+            panic!("Compilation error: {:?}", res);
+        };
+    }))
+    .map_err(|e| JsValue::from_str(&format!("{:?}", e)))
 }
