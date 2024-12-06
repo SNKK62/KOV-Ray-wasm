@@ -360,6 +360,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "itoa"
+version = "1.0.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d75a2a4b1b190afb6f5425f10f6a8f959d2ea0b9c2b1d79553551850539e4674"
+
+[[package]]
 name = "jobserver"
 version = "0.1.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -387,13 +393,14 @@ dependencies = [
 [[package]]
 name = "kov-ray"
 version = "0.1.0"
-source = "git+https://github.com/SNKK62/KOV-Ray?rev=1444731#1444731fe0d2722abc8e72f89155f9a555fd05c8"
+source = "git+https://github.com/SNKK62/KOV-Ray?rev=a16ea57#a16ea57d4e33f48ca4cd26ce2c07c79936845504"
 dependencies = [
  "image",
  "nom",
  "nom_locate",
  "rand",
  "ray-tracer-rs",
+ "serde",
 ]
 
 [[package]]
@@ -404,6 +411,7 @@ dependencies = [
  "kov-ray",
  "rand",
  "ray-tracer-rs",
+ "serde_json",
  "wasm-bindgen",
 ]
 
@@ -734,10 +742,11 @@ dependencies = [
 [[package]]
 name = "ray-tracer-rs"
 version = "0.1.0"
-source = "git+https://github.com/SNKK62/toy-ray-tracer-rs?rev=651de45#651de45ea3b237f3117a776b2fbf721949c30d0a"
+source = "git+https://github.com/SNKK62/toy-ray-tracer-rs?rev=02e2b50#02e2b509db1853055498e4a762b4495745227598"
 dependencies = [
  "image",
  "rand",
+ "serde",
 ]
 
 [[package]]
@@ -767,6 +776,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "57397d16646700483b67d2dd6511d79318f9d057fdbd21a4066aeac8b41d310a"
 
 [[package]]
+name = "ryu"
+version = "1.0.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f3cb5ba0dc43242ce17de99c180e96db90b235b8a9fdc9543c96d2209116bd9f"
+
+[[package]]
 name = "serde"
 version = "1.0.215"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -784,6 +799,18 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "serde_json"
+version = "1.0.133"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c7fceb2473b9166b2294ef05efcb65a3db80803f0b03ef86a5fc88a2b85ee377"
+dependencies = [
+ "itoa",
+ "memchr",
+ "ryu",
+ "serde",
 ]
 
 [[package]]
