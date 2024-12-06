@@ -35,18 +35,45 @@ impl Renderer {
         }
     }
 
+    #[wasm_bindgen(js_name = "serializeRenderer")]
+    pub fn serialize_renderer(&self) -> Vec<String> {
+        vec![
+            serde_json::to_string(&self.world).unwrap(),
+            serde_json::to_string(&self.config).unwrap(),
+            serde_json::to_string(&self.camera).unwrap(),
+        ]
+    }
+
+    #[wasm_bindgen(js_name = "fromJSON")]
+    pub fn deserialize_renderer(
+        world_json: &str,
+        config_json: &str,
+        camera_json: &str,
+    ) -> Renderer {
+        Renderer {
+            world: serde_json::from_str(world_json).unwrap(),
+            config: serde_json::from_str(config_json).unwrap(),
+            camera: serde_json::from_str(camera_json).unwrap(),
+            buffer: vec![],
+        }
+    }
+
+    #[wasm_bindgen(js_name = "getHeight")]
     pub fn get_height(&self) -> u32 {
         self.config.height as u32
     }
 
+    #[wasm_bindgen(js_name = "getWidth")]
     pub fn get_width(&self) -> u32 {
         self.config.width as u32
     }
 
+    #[wasm_bindgen(js_name = "getBuffer")]
     pub fn get_buffer(&self) -> Vec<u8> {
         self.buffer.clone()
     }
 
+    #[wasm_bindgen(js_name = "renderRow")]
     pub fn render_row(&mut self, row: u32) -> Vec<u8> {
         let width = self.config.width.round() as u32;
         let height = self.config.height.round() as u32;
@@ -72,4 +99,9 @@ impl Renderer {
 
         self.buffer[(row * width * 3) as usize..((row + 1) * width * 3) as usize].to_vec()
     }
+}
+
+#[wasm_bindgen(js_name = "canParse")]
+pub fn can_parse(input: &str) -> bool {
+    parse(input).is_ok()
 }
