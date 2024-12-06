@@ -2,103 +2,91 @@ use kov_ray_wasm::Renderer;
 
 fn main() {
     let input = r"
-        Camera {
-        lookfrom: <278, 278, -800>,
-        lookat: <278, 278, 0>,
-        dist_to_focus: 10,
-        angle: 40,
-    }
+Camera {
+    lookfrom: <13, 2, 3>,
+    lookat: <0, 0, 0>,
+    dist_to_focus: 10,
+    angle: 20,
+}
 
-    RED = <165.75, 12.75, 12.75>;
-    GRAY = <186.15, 186.15, 186.15>;
-    GREEN = <30.60, 114.75, 38.25>;
-    WHITE = <255, 255, 255>;
-    BLACK = <0, 0, 0>;
+Config {
+    width: 512,
+    height: 512 * 9 / 16,
+    samples_per_pixel: 10,
+    max_depth: 100,
+    background: <255 * 0.5, 255 * 0.7, 255>,
+}
 
-    Config {
-        width: 200,
-        height: 200,
-        samples_per_pixel: 50,
-        max_depth: 100,
-    }
+GRAY = <127.5, 127.5, 127.5>;
+// Ground
+Sphere {
+    center: <0.0, -1000.0, 0.0>,
+    radius: 1000,
+    material: Lambertian(Solid(GRAY)),
+}
 
-    // YZRect
-    Plane {
-        vertex: (<555, 0, 0>, <555, 555, 555>),
-        material: Lambertian(Solid(GREEN)),
-    }
+a = -11;
+b = -11;
 
-    // YZRect
-    Plane {
-        vertex: (<0, 0, 0>, <0, 555, 555>),
-        material: Lambertian(Solid(RED)),
-    }
+while a < 11 {
+    b = -11; // init b
+    while b < 11 {
+        choose_mat = rand();
+        radius = 0.2;
+        center_x = a + 0.9 * rand();
+        center_y = 0.2;
+        center_z = b + 0.9 * rand();
 
-    // XZRect
-    Plane {
-        vertex: (<213, 554, 227>, <343, 554, 332>),
-        material: Light(WHITE, 15),
-    }
+        // distance between (4, 0.2, 0) and center
+        length = sqrt(pow((center_x - 4), 2) + pow((center_y - radius), 2) + pow(center_z, 2));
 
-    // XZRect
-    Plane {
-        vertex: (<0, 0, 0>, <555, 0, 555>),
-        material: Lambertian(Solid(GRAY)),
+        if length > 0.9 {
+            if choose_mat < 0.7 {
+                ALBEDO = <255 * rand(), 255 * rand(), 255 * rand()>;
+                Sphere {
+                    center: <center_x, center_y, center_z>,
+                    radius: radius,
+                    material: Lambertian(Solid(ALBEDO)),
+                }
+            } else if choose_mat < 0.85 {
+                ALBEDO = <255 * (0.5 + rand() / 2), 255 * (0.5 + rand() / 2), 255 * (0.5 + rand() / 2)>;
+                fuzz = rand() / 2;
+                Sphere {
+                    center: <center_x, center_y, center_z>,
+                    radius: radius,
+                    material: Metal(ALBEDO, fuzz),
+                }
+            } else {
+                Sphere {
+                    center: <center_x, center_y, center_z>,
+                    radius: radius,
+                    material: Dielectric(1.5),
+                }
+            }
+        }
+        b = b + 1;
     }
+    a = a + 1;
+}
 
-    // XZRect
-    Plane {
-        vertex: (<0, 555, 0>, <555, 555, 555>),
-        material: Lambertian(Solid(GRAY)),
-    }
+Sphere {
+    center: <0, 1, 0>,
+    radius: 1,
+    material: Dielectric(1.5),
+}
 
-    // XYRect
-    Plane {
-        vertex: (<0, 0, 555>, <555, 555, 555>),
-        material: Lambertian(Solid(GRAY)),
-    }
+Sphere {
+    center: <-4.0, 1.0, 0>,
+    radius: 1,
+    material: Lambertian(Solid(<255 * 0.4, 255 * 0.2, 255 * 0.1>)),
+}
 
-    Box {
-        vertex: (<0, 0, 0>, <165, 330, 165>),
-        material: Lambertian(Solid(GRAY)),
-        rotateY: 15,
-        translate: <265, 0, 295>,
-    }
-
-    Box {
-        vertex: (<0, 0, 0>, <165, 165, 165>),
-        material: Lambertian(Solid(GRAY)),
-        rotateY: -18,
-        translate: <130, 0, 65>,
-    }
+Sphere {
+    center: <4.0, 1.0, 0.0>,
+    radius: 1,
+    material: Metal(<255 * 0.7, 255 * 0.6, 255 * 0.5>, 0),
+}
     ";
-    //     let input = r"
-    //     Camera {
-    //     lookfrom: <278, 278, -800>,
-    //     lookat: <278, 278, 0>,
-    //     dist_to_focus: 10,
-    //     angle: 40,
-    // }
-    //
-    // RED = <165.75, 12.75, 12.75>;
-    // GRAY = <186.15, 186.15, 186.15>;
-    // GREEN = <30.60, 114.75, 38.25>;
-    // WHITE = <255, 255, 255>;
-    // BLACK = <0, 0, 0>;
-    //
-    // Config {
-    //     width: 200,
-    //     height: 200,
-    //     samples_per_pixel: 100,
-    //     max_depth: 100,
-    //     background: WHITE,
-    // }
-    //
-    // Sphere {
-    //     center: <278, 278, 0>,
-    //     radius: 10,
-    //     material: Lambertian(Solid(RED)),
-    // }";
     let renderer = Renderer::new(input);
     let jsons = renderer.serialize_renderer();
     let world_json = jsons[0].as_str();
