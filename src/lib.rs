@@ -83,12 +83,12 @@ impl Renderer {
                 pixel_color += ray.color(&background, &self.world, max_depth);
             }
             let (r, g, b) = pixel_color.get_color(samples_per_pixel as i64);
-            buffer[(row * width * 3 + i * 3) as usize] = r;
-            buffer[(row * width * 3 + i * 3 + 1) as usize] = g;
-            buffer[(row * width * 3 + i * 3 + 2) as usize] = b;
+            buffer[(i * 3) as usize] = r;
+            buffer[(i * 3 + 1) as usize] = g;
+            buffer[(i * 3 + 2) as usize] = b;
         }
 
-        buffer[(row * width * 3) as usize..((row + 1) * width * 3) as usize].to_vec()
+        buffer.to_vec()
     }
 }
 
