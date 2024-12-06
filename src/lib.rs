@@ -12,7 +12,6 @@ pub struct Renderer {
     world: HittableEnum,
     config: ConfigValue,
     camera: Camera,
-    buffer: Vec<u8>,
 }
 
 #[wasm_bindgen]
@@ -23,15 +22,11 @@ impl Renderer {
         if ast.is_err() {
             panic!("Error parsing input: {:?}", ast.err());
         }
-        eprintln!("{:#?}", ast);
         let (world, config, camera) = eval_ast(&ast.unwrap());
-        let width = config.width.round() as u32;
-        let height = config.height.round() as u32;
         Renderer {
             world,
             config,
             camera,
-            buffer: vec![0; (width * height * 3) as usize],
         }
     }
 
@@ -54,7 +49,6 @@ impl Renderer {
             world: serde_json::from_str(world_json).unwrap(),
             config: serde_json::from_str(config_json).unwrap(),
             camera: serde_json::from_str(camera_json).unwrap(),
-            buffer: vec![],
         }
     }
 
@@ -68,11 +62,6 @@ impl Renderer {
         self.config.width as u32
     }
 
-    #[wasm_bindgen(js_name = "getBuffer")]
-    pub fn get_buffer(&self) -> Vec<u8> {
-        self.buffer.clone()
-    }
-
     #[wasm_bindgen(js_name = "renderRow")]
     pub fn render_row(&mut self, row: u32) -> Vec<u8> {
         let width = self.config.width.round() as u32;
@@ -83,6 +72,8 @@ impl Renderer {
 
         let mut rng = rand::thread_rng();
 
+        let mut buffer = vec![0; (width * 3) as usize];
+
         for i in 0..width {
             let mut pixel_color = Color::zero();
             for _ in 0..samples_per_pixel {
@@ -92,12 +83,12 @@ impl Renderer {
                 pixel_color += ray.color(&background, &self.world, max_depth);
             }
             let (r, g, b) = pixel_color.get_color(samples_per_pixel as i64);
-            self.buffer[(row * width * 3 + i * 3) as usize] = r;
-            self.buffer[(row * width * 3 + i * 3 + 1) as usize] = g;
-            self.buffer[(row * width * 3 + i * 3 + 2) as usize] = b;
+            buffer[(row * width * 3 + i * 3) as usize] = r;
+            buffer[(row * width * 3 + i * 3 + 1) as usize] = g;
+            buffer[(row * width * 3 + i * 3 + 2) as usize] = b;
         }
 
-        self.buffer[(row * width * 3) as usize..((row + 1) * width * 3) as usize].to_vec()
+        buffer[(row * width * 3) as usize..((row + 1) * width * 3) as usize].to_vec()
     }
 }
 

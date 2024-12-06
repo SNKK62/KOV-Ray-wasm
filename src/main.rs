@@ -18,7 +18,7 @@ fn main() {
     Config {
         width: 200,
         height: 200,
-        samples_per_pixel: 100,
+        samples_per_pixel: 50,
         max_depth: 100,
     }
 
@@ -99,7 +99,12 @@ fn main() {
     //     radius: 10,
     //     material: Lambertian(Solid(RED)),
     // }";
-    let mut renderer = Renderer::new(input);
+    let renderer = Renderer::new(input);
+    let jsons = renderer.serialize_renderer();
+    let world_json = jsons[0].as_str();
+    let config_json = jsons[1].as_str();
+    let camera_json = jsons[2].as_str();
+    let mut renderer = Renderer::deserialize_renderer(world_json, config_json, camera_json);
     println!("P3");
     println!("{} {}", renderer.get_width(), renderer.get_height());
     println!("255");
