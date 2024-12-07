@@ -25,12 +25,18 @@ Sphere {
     material: Lambertian(Solid(GRAY)),
 }
 
-a = -11;
-b = -11;
+min_a = -8;
+min_b = -8;
+max_a = 8;
+max_b = 8;
 
-while a < 11 {
-    b = -11; // init b
-    while b < 11 {
+a = min_a; // init a
+b = min_b; // init b
+
+
+while a < max_a {
+    b = min_b; // init b
+    while b < max_b {
         choose_mat = rand();
         radius = 0.2;
         center = <a + 0.9 * rand(), 0.2, b + 0.9 * rand()>;
