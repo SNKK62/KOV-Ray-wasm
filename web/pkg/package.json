@@ -1,0 +1,15 @@
+{
+  "name": "kov-ray-wasm",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "kov_ray_wasm_bg.wasm",
+    "kov_ray_wasm.js",
+    "kov_ray_wasm.d.ts"
+  ],
+  "main": "kov_ray_wasm.js",
+  "types": "kov_ray_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
