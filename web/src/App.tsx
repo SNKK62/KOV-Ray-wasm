@@ -8,7 +8,7 @@ import { ArrowDownToLine } from 'lucide-react';
 
 const NUM_WORKERS = 20;
 function App() {
-  const [value, setValue] = useState(BEAUTIFUL_BALLS_SCRIPT);
+  const [value, setValue] = useState(localStorage.getItem('content') ?? BEAUTIFUL_BALLS_SCRIPT);
   const [errorMsg, setErrorMsg] = useState('');
   const [wasmInitialized, setWasmInitialized] = useState(false);
   const [isRendering, setIsRendering] = useState(false);
@@ -21,6 +21,7 @@ function App() {
 
   const updateValue = (val: string) => {
     setValue(val);
+    localStorage.setItem('content', val);
   };
 
   const loadScript = (script: 'cornell_box' | 'beautiful_balls') => {
@@ -214,7 +215,7 @@ function App() {
       <div className="flex">
         <div className="h-[100%] w-[50%] border-r-2 border-gray-400 box-border">
           <div className="h-8 border-gray-400 border-b-2 grid grid-cols-[5rem_1fr] box-border">
-            <div className="text-right pl-8 flex items-center">Source</div>
+            <div className="text-right pl-8 flex items-center font-bold">Source</div>
             <div className=" px-1 h-8">
               {errorMsg && (
                 <div className="text-red-600 h-8 flex items-center justify-end">{errorMsg}</div>
@@ -255,7 +256,7 @@ function App() {
           </div>
           <div className="overflow-hidden">
             <CodeMirror
-              height="calc(100vh - 8rem)"
+              height="calc(100vh - 8.25rem)"
               width="50vw"
               value={value}
               // extensions={[javascript({ jsx: true })]}
