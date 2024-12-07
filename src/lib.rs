@@ -100,7 +100,7 @@ pub fn can_compile(input: &str) -> Result<(), JsValue> {
     let res = eval_ast(&ast.unwrap());
     if res.is_err() {
         let res = res.as_ref().err().unwrap();
-        panic!("Compile error: {:?}", res);
+        return Err(JsValue::from_str(&format!("Compile error: {:?}", res)));
     };
     Ok(())
 }
