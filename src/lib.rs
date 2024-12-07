@@ -95,15 +95,12 @@ impl Renderer {
 pub fn can_compile(input: &str) -> Result<(), JsValue> {
     let ast = parse(input);
     if ast.is_err() {
-        // return Err(JsValue::from_str(&format!("{:?}", ast.err().unwrap())));
         return Err(JsValue::from_str("Syntax error"));
     }
-    panic::catch_unwind(panic::AssertUnwindSafe(|| {
-        let res = eval_ast(&ast.unwrap());
-        if res.is_err() {
-            let res = res.err().unwrap();
-            panic!("Compilation error: {:?}", res);
-        };
-    }))
-    .map_err(|e| JsValue::from_str(&format!("{:?}", e)))
+    let res = eval_ast(&ast.unwrap());
+    if res.is_err() {
+        let res = res.as_ref().err().unwrap();
+        panic!("Compile error: {:?}", res);
+    };
+    Ok(())
 }

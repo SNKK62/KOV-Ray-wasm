@@ -1,4 +1,4 @@
-use kov_ray_wasm::{can_compile, Renderer};
+use kov_ray_wasm::Renderer;
 
 fn main() {
     let input = r"
@@ -85,12 +85,8 @@ Sphere {
     center: <4.0, 1.0, 0.0>,
     radius: 1,
     material: Metal(<255 * 0.7, 255 * 0.6, 255 * 0.5>, 0),
-
+}
     ";
-    if can_compile(input).is_err() {
-        println!("Failed to parse input");
-        return;
-    }
     let renderer = Renderer::new(input);
     let jsons = renderer.serialize_renderer();
     let world_json = jsons[0].as_str();
