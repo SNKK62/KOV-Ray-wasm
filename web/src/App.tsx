@@ -11,11 +11,13 @@ function App() {
   const [value, setValue] = useState(BEAUTIFUL_BALLS_SCRIPT);
   const [errorMsg, setErrorMsg] = useState('');
   const [wasmInitialized, setWasmInitialized] = useState(false);
-  const previewRef = useRef<HTMLCanvasElement>(null);
-  const previewWrapperRef = useRef<HTMLDivElement>(null);
   const [isRendering, setIsRendering] = useState(false);
   const [alreadyRendered, setAlreadyRendered] = useState(false);
   const [neverRendered, setNeverRendered] = useState(true);
+
+  const previewRef = useRef<HTMLCanvasElement>(null);
+  const previewWrapperRef = useRef<HTMLDivElement>(null);
+  const downloadRef = useRef<HTMLCanvasElement>(null);
 
   const updateValue = (val: string) => {
     setValue(val);
@@ -73,10 +75,19 @@ function App() {
   };
 
   const handleRender = () => {
-    if (!wasmInitialized || !previewRef.current || !previewWrapperRef.current) return;
+    if (
+      !wasmInitialized ||
+      !previewRef.current ||
+      !previewWrapperRef.current ||
+      !downloadRef.current
+    )
+      return;
     const canvas = previewRef.current;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+
+    const hiddenCanvas = downloadRef.current;
+    const downloadCtx = hiddenCanvas.getContext('2d');
+    if (!ctx || !downloadCtx) return;
     setNeverRendered(false);
     setIsRendering(true);
     setAlreadyRendered(false);
@@ -88,7 +99,11 @@ function App() {
     const imageHeight = renderer.getHeight();
     const aspectRatio = imageWidth / imageHeight;
 
-    const preview = previewRef.current!;
+    hiddenCanvas.width = imageWidth;
+    hiddenCanvas.height = imageHeight;
+    const fullResolutionData = downloadCtx.createImageData(imageWidth, imageHeight);
+
+    const preview = previewRef.current;
     const width = preview.offsetWidth;
     const height = preview.offsetHeight;
     preview.width = width;
@@ -100,6 +115,15 @@ function App() {
       worker.postMessage({ rendererJsons, id, numWorkers: NUM_WORKERS });
       worker.onmessage = function (event) {
         const { row, rowData } = event.data;
+
+        for (let i = 0; i < imageWidth; i++) {
+          const idx = (row * imageWidth + i) * 4;
+          fullResolutionData.data[idx] = rowData[3 * i]; // red
+          fullResolutionData.data[idx + 1] = rowData[3 * i + 1]; // green
+          fullResolutionData.data[idx + 2] = rowData[3 * i + 2]; // blue
+          fullResolutionData.data[idx + 3] = 255; // alpha
+        }
+
         if (width >= imageWidth) {
           const imageData = ctx.createImageData(imageWidth, 1);
           const previewHeight = Math.floor(imageWidth / aspectRatio);
@@ -116,6 +140,7 @@ function App() {
         } else {
           const imageData = ctx.createImageData(width, 1);
           const previewHeight = Math.floor(width / aspectRatio);
+          // This means the ratio of the row in the actual image to the row in the rendered preview
           const rowRatio = imageHeight / previewHeight;
           for (let i = 0; i < width; i++) {
             const idx = i * 4;
@@ -142,9 +167,21 @@ function App() {
           console.log('Rendering completed');
           setIsRendering(false);
           setAlreadyRendered(true);
+          downloadCtx.putImageData(fullResolutionData, 0, 0);
         }
       };
     }
+  };
+
+  const handleDownload = () => {
+    if (!downloadRef.current) return;
+    const canvas = downloadRef.current;
+    const url = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'result.png';
+    a.click();
+    a.remove();
   };
 
   return (
@@ -157,7 +194,12 @@ function App() {
           </div>
         </div>
         <div className="flex justify-end items-center gap-2">
-          <Button size="icon" variant="outline" disabled={alreadyRendered}>
+          <Button
+            size="icon"
+            variant="outline"
+            disabled={!alreadyRendered}
+            onClick={handleDownload}
+          >
             <ArrowDownToLine />
           </Button>
           <Button variant="destructive" disabled={!isRendering} onClick={handleCancel}>
@@ -179,25 +221,37 @@ function App() {
               )}
             </div>
           </div>
-          <div className="h-12 flex items-center gap-4 px-4 border-b-2 border-gray-400">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                loadScript('beautiful_balls');
-              }}
-            >
-              Beautiful Balls
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                loadScript('cornell_box');
-              }}
-            >
-              Cornell Box
-            </Button>
+          <div className="w-[100%] flex justify-around border-b-2 border-gray-400">
+            <div className="h-12 flex items-center gap-4 px-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  loadScript('beautiful_balls');
+                }}
+              >
+                Beautiful Balls
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  loadScript('cornell_box');
+                }}
+              >
+                Cornell Box
+              </Button>
+            </div>
+            <div className="flex items-center">
+              <Button size="lg" variant="secondary" asChild>
+                <a
+                  href="https://github.com/SNKK62/KOV-Ray?tab=readme-ov-file#syntax"
+                  target="_blank"
+                >
+                  See Syntax
+                </a>
+              </Button>
+            </div>
           </div>
           <div className="overflow-hidden">
             <CodeMirror
@@ -222,7 +276,7 @@ function App() {
           ></canvas>
         </div>
       </div>
-      <canvas className="hidden"></canvas>
+      <canvas className="hidden" ref={downloadRef}></canvas>
     </div>
   );
 }
