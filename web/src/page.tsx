@@ -82,12 +82,13 @@ function Page() {
       !downloadRef.current
     )
       return;
+
     const canvas = previewRef.current;
     const ctx = canvas.getContext('2d');
-
     const hiddenCanvas = downloadRef.current;
     const downloadCtx = hiddenCanvas.getContext('2d');
     if (!ctx || !downloadCtx) return;
+
     setNeverRendered(false);
     setIsRendering(true);
     setAlreadyRendered(false);
@@ -102,12 +103,15 @@ function Page() {
     hiddenCanvas.width = imageWidth;
     hiddenCanvas.height = imageHeight;
     const fullResolutionData = downloadCtx.createImageData(imageWidth, imageHeight);
+    downloadCtx.putImageData(fullResolutionData, 0, 0); // clear the canvas
 
     const preview = previewRef.current;
     const width = preview.offsetWidth;
     const height = preview.offsetHeight;
     preview.width = width;
     preview.height = height;
+    const clearedImageData = ctx.createImageData(width, height);
+    ctx.putImageData(clearedImageData, 0, 0); // clear the canvas
 
     const rendererJsons = renderer.serializeRenderer();
     for (let id = 0; id < NUM_WORKERS; id++) {
@@ -190,8 +194,8 @@ function Page() {
         handleRender={handleRender}
         handleCancel={handleCancel}
         handleDownload={handleDownload}
-        isRendering={isRendering}
-        alreadyRendered={alreadyRendered}
+        canRender={!isRendering && wasmInitialized}
+        canDownload={alreadyRendered}
       />
       <div className="flex">
         <div className="h-[100%] w-[50%] border-r-2 border-gray-400 box-border">
