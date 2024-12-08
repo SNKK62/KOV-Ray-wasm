@@ -1,6 +1,6 @@
 {
   "name": "kov-ray-wasm",
-  "homepage": "https://snkk62.github.io/KOV-Ray-wasm",
+  "homepage": "https://snkk62.github.io/KOV-Ray-wasm/web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
