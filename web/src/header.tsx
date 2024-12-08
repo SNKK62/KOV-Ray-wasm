@@ -6,6 +6,7 @@ type HeaderProps = {
   handleCancel: () => void;
   handleDownload: () => void;
   canRender: boolean;
+  canCancel: boolean;
   canDownload: boolean;
 };
 export const Header = ({
@@ -13,6 +14,7 @@ export const Header = ({
   handleCancel,
   handleDownload,
   canRender,
+  canCancel,
   canDownload,
 }: HeaderProps) => {
   return (
@@ -27,10 +29,10 @@ export const Header = ({
         <Button size="icon" variant="outline" disabled={!canDownload} onClick={handleDownload}>
           <ArrowDownToLine />
         </Button>
-        <Button variant="destructive" disabled={canRender} onClick={handleCancel}>
+        <Button variant="destructive" disabled={!canCancel} onClick={handleCancel}>
           Cancel
         </Button>
-        <LoadingButton loading={!canRender} disabled={!canRender} onClick={handleRender}>
+        <LoadingButton loading={canCancel} disabled={!canRender} onClick={handleRender}>
           Render
         </LoadingButton>
       </div>

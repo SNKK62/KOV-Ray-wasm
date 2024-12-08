@@ -18,7 +18,7 @@ export const Editor = ({ value, onChange }: EditorProps) => {
         onChange={(val: string, _viewUpdate: ViewUpdate) => {
           onChange(val);
         }}
-        theme="dark"
+        // theme="dark"
       />
     </div>
   );

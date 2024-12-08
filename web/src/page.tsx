@@ -194,7 +194,8 @@ function Page() {
         handleRender={handleRender}
         handleCancel={handleCancel}
         handleDownload={handleDownload}
-        canRender={!isRendering && wasmInitialized}
+        canRender={!isRendering && wasmInitialized && errorMsg === ''}
+        canCancel={isRendering || !wasmInitialized}
         canDownload={alreadyRendered}
       />
       <div className="flex">
