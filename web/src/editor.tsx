@@ -1,5 +1,6 @@
 import CodeMirror, { ViewUpdate } from '@uiw/react-codemirror';
 import { KOVRay } from 'codemirror-lang-kov-ray';
+import { useActualTheme } from './theme.ts';
 
 type EditorProps = {
   value: string;
@@ -7,6 +8,7 @@ type EditorProps = {
 };
 
 export const Editor = ({ value, onChange }: EditorProps) => {
+  const theme = useActualTheme();
   return (
     <div className="overflow-hidden">
       <CodeMirror
@@ -18,7 +20,7 @@ export const Editor = ({ value, onChange }: EditorProps) => {
         onChange={(val: string, _viewUpdate: ViewUpdate) => {
           onChange(val);
         }}
-        // theme="dark"
+        theme={theme}
       />
     </div>
   );

@@ -1,5 +1,6 @@
 import { ArrowDownToLine } from 'lucide-react';
 import { Button, LoadingButton } from '@/components/ui/button';
+import { ThemeSwitch } from './themeSwitch';
 
 type HeaderProps = {
   handleRender: () => void;
@@ -26,6 +27,7 @@ export const Header = ({
         </div>
       </div>
       <div className="flex justify-end items-center gap-2">
+        <ThemeSwitch />
         <Button size="icon" variant="outline" disabled={!canDownload} onClick={handleDownload}>
           <ArrowDownToLine />
         </Button>
