@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 wasm-bindgen = "0.2.95"
-kov-ray = { git = "https://github.com/SNKK62/KOV-Ray", rev="1939c29" }
+kov-ray = { git = "https://github.com/SNKK62/KOV-Ray", rev="e8e66fd" }
 ray-tracer-rs = {git = "https://github.com/SNKK62/toy-ray-tracer-rs", rev = "02e2b50" }
 rand = { version = "0.8", default-features = false, features = ["std"] }
 getrandom = { version = "0.2", features = ["js"] }
