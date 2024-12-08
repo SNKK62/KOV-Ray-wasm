@@ -1,4 +1,5 @@
 import CodeMirror, { ViewUpdate } from '@uiw/react-codemirror';
+import { KOVRay } from 'codemirror-lang-kov-ray';
 
 type EditorProps = {
   value: string;
@@ -12,12 +13,12 @@ export const Editor = ({ value, onChange }: EditorProps) => {
         height="calc(100vh - 8.25rem)"
         width="50vw"
         value={value}
-        // extensions={[javascript({ jsx: true })]}
+        extensions={[KOVRay()]}
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onChange={(val: string, _viewUpdate: ViewUpdate) => {
           onChange(val);
         }}
-        // theme="dark"
+        theme="dark"
       />
     </div>
   );
