@@ -32,19 +32,19 @@ function Page() {
     }
   };
 
-  const onChange = useCallback(
-    (val: string) => {
-      updateValue(val);
-      if (!wasmInitialized) return;
-      try {
-        canCompile(val);
-        setErrorMsg('');
-      } catch (error) {
-        setErrorMsg(String(error));
-      }
-    },
-    [wasmInitialized],
-  );
+  const onChange = useCallback((val: string) => {
+    updateValue(val);
+  }, []);
+
+  useEffect(() => {
+    if (!wasmInitialized) return;
+    try {
+      canCompile(value);
+      setErrorMsg('');
+    } catch (error) {
+      setErrorMsg(String(error));
+    }
+  }, [value, wasmInitialized]);
 
   useEffect(() => {
     init().then(() => {
