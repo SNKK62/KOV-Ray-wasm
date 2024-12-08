@@ -1,39 +1,51 @@
-name: Deploy to GitHub Pages
+name: Deploy React App to GitHub Pages
 
 on:
   push:
     branches:
       - main
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      # リポジトリをクローン
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      # リポジトリのチェックアウト
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Move to the app directory
-        run: cd web
-
-      # Node.jsをセットアップ
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      # Node.jsのセットアップ
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 16 # 使用するNode.jsのバージョン
+          node-version: '16'
 
-      # 依存関係をインストール
+      # 必要なパッケージのインストール
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd web
+          npm i
 
-      # アプリケーションをビルド
-      - name: Build the app
-        run: npm run build
+      # アプリケーションのビルド
+      - name: Build project
+        run: |
+          cd web
+          npm run build
 
-      # デプロイ
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      # アーティファクトのアップロード
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
+          path: ./web/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      # GitHub Pagesへのデプロイ
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v2
