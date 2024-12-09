@@ -17,7 +17,7 @@ BLACK = <0, 0, 0>;
 Config {
     width: 512,
     height: 512,
-    samples_per_pixel: 10000,
+    samples_per_pixel: 100,
     max_depth: 100,
 }
 

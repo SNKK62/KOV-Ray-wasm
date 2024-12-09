@@ -7,8 +7,6 @@ use wasm_bindgen::prelude::*;
 
 use rand::Rng;
 
-use std::panic;
-
 #[wasm_bindgen]
 pub struct Renderer {
     world: HittableEnum,
@@ -94,13 +92,31 @@ impl Renderer {
 #[wasm_bindgen(js_name = "canCompile")]
 pub fn can_compile(input: &str) -> Result<(), JsValue> {
     let ast = parse(input);
-    if ast.is_err() {
-        return Err(JsValue::from_str("Syntax error"));
+    if let Err(e) = ast {
+        return Err(JsValue::from_str(&format!(
+            "L{}:Syntax error",
+            e.input.location_line()
+        )));
     }
-    let res = eval_ast(&ast.unwrap());
+    let ast = ast.unwrap();
+    let res = eval_ast(&ast);
     if res.is_err() {
         let res = res.as_ref().err().unwrap();
-        return Err(JsValue::from_str(&format!("Compile error: {:?}", res)));
+        match res.span {
+            Some(span) => {
+                return Err(JsValue::from_str(&format!(
+                    "L{}:Compile error: {}",
+                    span.location_line(),
+                    res.message
+                )));
+            }
+            None => {
+                return Err(JsValue::from_str(&format!(
+                    "Compile error: {}",
+                    res.message
+                )));
+            }
+        }
     };
     Ok(())
 }

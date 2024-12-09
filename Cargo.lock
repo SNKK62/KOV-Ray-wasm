@@ -393,7 +393,7 @@ dependencies = [
 [[package]]
 name = "kov-ray"
 version = "0.1.0"
-source = "git+https://github.com/SNKK62/KOV-Ray?rev=e8e66fd#e8e66fd6263fde5489c5cf12181997ad82276215"
+source = "git+https://github.com/SNKK62/KOV-Ray?rev=0f06674#0f066748404486a2914bbc02e355c9ecf750abbe"
 dependencies = [
  "image",
  "nom",
