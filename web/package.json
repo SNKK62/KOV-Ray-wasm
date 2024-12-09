@@ -16,7 +16,7 @@
     "@uiw/react-codemirror": "^4.23.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "codemirror-lang-kov-ray": "git+https://github.com/SNKK62/codemirror-lang-kov-ray.git#647ad48",
+    "codemirror-lang-kov-ray": "git+https://github.com/SNKK62/codemirror-lang-kov-ray.git#f0a22df",
     "lucide-react": "^0.468.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
