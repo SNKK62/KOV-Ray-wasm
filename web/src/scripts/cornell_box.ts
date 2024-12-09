@@ -1,20 +1,23 @@
-export const CORNELL_BOX_SCRIPT = `Camera {
-    lookfrom: <278, 278, -800>,
-    lookat: <278, 278, 0>,
+export const CORNELL_BOX_SCRIPT = `LOOK_FROM = <278, 278, -800>;
+LOOK_AT = <278, 278, 0>;
+
+Camera {
+    lookfrom: LOOK_FROM, // camera position
+    lookat: LOOK_AT,
     dist_to_focus: 10,
     angle: 40,
 }
 
-RED = <165.75, 12.75, 12.75>;
+RED = 255 * (<0.05, 0.05, 0.05> + <0.6, 0, 0>);
 GRAY = <186.15, 186.15, 186.15>;
 GREEN = <30.60, 114.75, 38.25>;
-WHITE = 255 * <1, 1, 1>;
+WHITE = <255, 255, 255>;
 BLACK = <0, 0, 0>;
 
 Config {
-    width: 400,
-    height: 400,
-    samples_per_pixel: 100,
+    width: 512,
+    height: 512,
+    samples_per_pixel: 10000,
     max_depth: 100,
 }
 
