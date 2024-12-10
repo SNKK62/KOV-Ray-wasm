@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { CORNELL_BOX_SCRIPT, BEAUTIFUL_BALLS_SCRIPT } from './scripts';
 import { Header } from './header';
 import { Editor } from './editor';
+import { Progress } from '@/components/ui/progress';
 
 const NUM_WORKERS = 20;
 function Page() {
@@ -14,6 +15,8 @@ function Page() {
   const [isRendering, setIsRendering] = useState(false);
   const [alreadyRendered, setAlreadyRendered] = useState(false);
   const [neverRendered, setNeverRendered] = useState(true);
+
+  const [progress, setProgress] = useState(0);
 
   const previewRef = useRef<HTMLCanvasElement>(null);
   const previewWrapperRef = useRef<HTMLDivElement>(null);
@@ -82,6 +85,8 @@ function Page() {
       !downloadRef.current
     )
       return;
+
+    setProgress(0); // reset progress
 
     const canvas = previewRef.current;
     const ctx = canvas.getContext('2d');
@@ -165,6 +170,7 @@ function Page() {
           }
         }
         currentRow++;
+        setProgress((currentRow / imageHeight) * 100);
         if (currentRow >= imageHeight) {
           const end = performance.now();
           console.log(`Rendering time: ${end - start}ms`);
@@ -198,8 +204,8 @@ function Page() {
         canCancel={isRendering || !wasmInitialized}
         canDownload={alreadyRendered}
       />
-      <div className="flex">
-        <div className="h-[100%] w-[50%] border-r-2 border-gray-400 box-border">
+      <div className="grid grid-cols-2">
+        <div className="h-[100%] border-r-2 border-gray-400 box-border">
           <div className="h-8 border-gray-400 border-b-2 grid grid-cols-[5rem_1fr] box-border">
             <div className="text-right pl-8 flex items-center font-bold">Source</div>
             <div className=" px-1 h-8">
@@ -242,16 +248,22 @@ function Page() {
           </div>
           <Editor value={value} onChange={onChange} />
         </div>
-        <div ref={previewWrapperRef} className="relative text-center w-[50%]">
-          {neverRendered && (
-            <div className="absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-0">
-              Image Preview Here
-            </div>
-          )}
-          <canvas
-            ref={previewRef}
-            className="m-[1rem] h-[calc(100%-2rem)] w-[calc(100%-2rem)] z-10"
-          ></canvas>
+        <div className="grid grid-rows-[1rem_1fr]">
+          <div className="grid grid-cols-[1fr_4rem]">
+            <Progress value={progress} className="h-[100%] rounded-none" />
+            <div className="text-right border-l-black border-l">{progress.toFixed(0)}%</div>
+          </div>
+          <div ref={previewWrapperRef} className="relative text-center">
+            {neverRendered && (
+              <div className="absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-0">
+                Image Preview Here
+              </div>
+            )}
+            <canvas
+              ref={previewRef}
+              className="m-[1rem] h-[calc(100%-2rem)] w-[calc(100%-2rem)] z-10"
+            ></canvas>
+          </div>
         </div>
       </div>
       <canvas className="hidden" ref={downloadRef}></canvas>
